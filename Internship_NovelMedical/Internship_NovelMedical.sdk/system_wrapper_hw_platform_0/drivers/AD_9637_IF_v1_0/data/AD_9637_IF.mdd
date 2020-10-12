@@ -1,0 +1,10 @@
+
+
+OPTION psf_version = 2.1;
+
+BEGIN DRIVER AD_9637_IF
+	OPTION supported_peripherals = (AD_9637_IF);
+	OPTION copyfiles = all;
+	OPTION VERSION = 1.0;
+	OPTION NAME = AD_9637_IF;
+END DRIVER

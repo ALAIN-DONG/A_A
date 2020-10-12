@@ -1,0 +1,248 @@
+#-----------------------------------------------------------
+# Vivado v2019.1 (64-bit)
+# SW Build 2552052 on Fri May 24 14:49:42 MDT 2019
+# IP Build 2548770 on Fri May 24 18:01:18 MDT 2019
+# Start of session at: Thu Oct  1 10:14:49 2020
+# Process ID: 10532
+# Current directory: E:/A_A/AD_9637/managed_ip_project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent10912 E:\A_A\AD_9637\managed_ip_project\managed_ip_project.xpr
+# Log file: E:/A_A/AD_9637/managed_ip_project/vivado.log
+# Journal file: E:/A_A/AD_9637/managed_ip_project\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/A_A/AD_9637/managed_ip_project/managed_ip_project.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_SPI_1.0'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2019.1/data/ip'.
+open_project: Time (s): cpu = 00:00:21 ; elapsed = 00:00:20 . Memory (MB): peak = 751.777 ; gain = 131.332
+create_peripheral xilinx.com user AD_9637_IF 1.0 -dir E:/A_A/AD_9637/managed_ip_project/../ip_repo
+add_peripheral_interface S00_AXI -interface_mode slave -axi_type lite [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]
+set_property VALUE 34 [ipx::get_bus_parameters WIZ_NUM_REG -of_objects [ipx::get_bus_interfaces S00_AXI -of_objects [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]]]
+generate_peripheral -driver -bfm_example_design -debug_hw_example_design [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]
+write_peripheral [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]
+set_property  ip_repo_paths  {E:/A_A/AD_9637/managed_ip_project/../ip_repo/AD_9637_IF_1.0 E:/A_A/AD_9637/ip_repo/AD_9637_SPI_1.0} [current_project]
+update_ip_catalog -rebuild
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_SPI_1.0'.
+ipx::edit_ip_in_project -upgrade true -name AD_9637_IF_v1_0_project -directory E:/A_A/AD_9637/managed_ip_project/managed_ip_project.tmp/AD_9637_IF_v1_0_project e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2019.1/data/ip'.
+create_project: Time (s): cpu = 00:00:16 ; elapsed = 00:00:10 . Memory (MB): peak = 792.031 ; gain = 1.371
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_SPI_1.0'.
+INFO: [IP_Flow 19-795] Syncing license key meta-data
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+ipx::edit_ip_in_project: Time (s): cpu = 00:00:22 ; elapsed = 00:00:14 . Memory (MB): peak = 817.801 ; gain = 27.141
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_DeSerializer.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_DeSerializer.v
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Grar_Box_6b_2_12b.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Grar_Box_6b_2_12b.v
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/utile_To_Pulse.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/utile_To_Pulse.v
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+launch_runs impl_1 -jobs 4
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+[Fri Oct  2 18:01:02 2020] Launched synth_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/synth_1/runme.log
+[Fri Oct  2 18:01:02 2020] Launched impl_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/impl_1/runme.log
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v_1_0_M_AXIS.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v_1_0_M_AXIS.v
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Data_processing.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Data_processing.v
+update_compile_order -fileset sources_1
+reset_run synth_1
+launch_runs impl_1 -jobs 4
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+[Fri Oct  2 20:02:42 2020] Launched synth_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/synth_1/runme.log
+[Fri Oct  2 20:02:43 2020] Launched impl_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/impl_1/runme.log
+open_run impl_1
+INFO: [Device 21-403] Loading part xc7z020clg484-1
+INFO: [Netlist 29-17] Analyzing 148 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2019.1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+Reading XDEF placement.
+Reading placer database...
+Reading XDEF routing.
+Read XDEF File: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.491 . Memory (MB): peak = 1935.566 ; gain = 0.000
+Restored from archive | CPU: 1.000000 secs | Memory: 0.000000 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.491 . Memory (MB): peak = 1935.566 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 1935.566 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+open_run: Time (s): cpu = 00:00:48 ; elapsed = 00:00:41 . Memory (MB): peak = 2068.590 ; gain = 804.176
+WARNING: [Timing 38-313] There are no user specified timing constraints. Timing constraints are needed for proper timing analysis.
+reset_run synth_1
+launch_runs impl_1 -jobs 4
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+[Fri Oct  2 20:18:30 2020] Launched synth_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/synth_1/runme.log
+[Fri Oct  2 20:18:30 2020] Launched impl_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/impl_1/runme.log
+close_design
+close_design: Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2799.762 ; gain = 0.000
+open_run impl_1
+INFO: [Netlist 29-17] Analyzing 148 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2019.1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+Reading XDEF placement.
+Reading placer database...
+Reading XDEF routing.
+Read XDEF File: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.593 . Memory (MB): peak = 2799.762 ; gain = 0.000
+Restored from archive | CPU: 0.000000 secs | Memory: 0.000000 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.593 . Memory (MB): peak = 2799.762 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 2799.762 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+open_run: Time (s): cpu = 00:00:18 ; elapsed = 00:00:13 . Memory (MB): peak = 2799.762 ; gain = 0.000
+WARNING: [Timing 38-313] There are no user specified timing constraints. Timing constraints are needed for proper timing analysis.
+show_objects -name gen_adc0 [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ CARRY.*.* } ]
+show_objects -name rx_adc_idelay_adc0 [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ CARRY.*.* } ]
+show_objects -name idelaye2 [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ CARRY.*.* } ]
+ipx::merge_project_changes files [ipx::current_core]
+WARNING: [IP_Flow 19-5226] Project source file 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml' ignored by IP packager.
+ipx::merge_project_changes hdl_parameters [ipx::current_core]
+WARNING: [IP_Flow 19-5226] Project source file 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml' ignored by IP packager.
+INFO: [IP_Flow 19-5107] Inferred bus interface 'M_AXIS_aresetn' of definition 'xilinx.com:signal:reset:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-5107] Inferred bus interface 'M_AXIS_aclk' of definition 'xilinx.com:signal:clock:1.0' (from Xilinx Repository).
+INFO: [IP_Flow 19-3166] Bus Interface 'S00_AXI': References existing memory map 'S00_AXI'.
+INFO: [IP_Flow 19-4728] Bus Interface 'M_AXIS_aresetn': Added interface parameter 'POLARITY' with value 'ACTIVE_LOW'.
+INFO: [IP_Flow 19-4728] Bus Interface 'M_AXIS_aclk': Added interface parameter 'ASSOCIATED_RESET' with value 'M_AXIS_aresetn'.
+set_property abstraction_type_vlnv xilinx.com:interface:axis_rtl:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:interface:axis:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map CLK [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::add_port_map TVALID [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tvalid [ipx::get_port_maps TVALID -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TLAST [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tlast [ipx::get_port_maps TLAST -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TKEEP [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tkeep [ipx::get_port_maps TKEEP -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TREADY [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tready [ipx::get_port_maps TREADY -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TDATA [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tdata [ipx::get_port_maps TDATA -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+set_property abstraction_type_vlnv xilinx.com:signal:clock_rtl:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:signal:clock:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TVALID [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TLAST [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TKEEP [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TREADY [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TDATA [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::add_port_map CLK [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_aclk [ipx::get_port_maps CLK -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::infer_bus_interface {M_AXIS_tready M_AXIS_tkeep M_AXIS_tlast M_AXIS_tvalid M_AXIS_tdata} xilinx.com:interface:axis_rtl:1.0 [ipx::current_core]
+INFO: [IP_Flow 19-5107] Inferred bus interface 'M_AXIS' of definition 'xilinx.com:interface:axis:1.0' (from TCL Argument).
+set_property core_revision 2 [ipx::current_core]
+ipx::update_source_project_archive -component [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+reset_run synth_1
+launch_runs impl_1 -jobs 4
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+[Fri Oct  2 21:14:58 2020] Launched synth_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/synth_1/runme.log
+[Fri Oct  2 21:14:58 2020] Launched impl_1...
+Run output will be captured here: e:/a_a/ad_9637/managed_ip_project/managed_ip_project.tmp/ad_9637_if_v1_0_project/AD_9637_IF_v1_0_project.runs/impl_1/runme.log
+close_design
+close_design: Time (s): cpu = 00:00:08 ; elapsed = 00:00:11 . Memory (MB): peak = 2854.934 ; gain = 0.000
+ipx::merge_project_changes files [ipx::current_core]
+WARNING: [IP_Flow 19-5226] Project source file 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml' ignored by IP packager.
+ERROR: [Vivado 12-106] *** Exception: java.lang.NullPointerException (See E:/A_A/AD_9637/managed_ip_project/vivado_pid10532.debug)
+ERROR: [Common 17-39] 'ipx::merge_project_changes' failed due to earlier errors.
+ipx::merge_project_changes files [ipx::current_core]
+WARNING: [IP_Flow 19-5226] Project source file 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml' ignored by IP packager.
+ERROR: [Vivado 12-106] *** Exception: java.lang.NullPointerException (See E:/A_A/AD_9637/managed_ip_project/vivado_pid10532.debug)
+ERROR: [Common 17-39] 'ipx::merge_project_changes' failed due to earlier errors.
+ipx::merge_project_changes hdl_parameters [ipx::current_core]
+WARNING: [IP_Flow 19-5226] Project source file 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml' ignored by IP packager.
+INFO: [IP_Flow 19-3166] Bus Interface 'S00_AXI': References existing memory map 'S00_AXI'.
+INFO: [IP_Flow 19-4728] Bus Interface 'M_AXIS_aclk': Added interface parameter 'ASSOCIATED_BUSIF' with value 'M_AXIS'.
+ERROR: [Vivado 12-106] *** Exception: java.lang.NullPointerException (See E:/A_A/AD_9637/managed_ip_project/vivado_pid10532.debug)
+ERROR: [Common 17-39] 'ipx::merge_project_changes' failed due to earlier errors.
+close_project
+ipx::edit_ip_in_project -upgrade true -name AD_9637_IF_v1_0_project -directory E:/A_A/AD_9637/managed_ip_project/managed_ip_project.tmp/AD_9637_IF_v1_0_project e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2019.1/data/ip'.
+create_project: Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2854.934 ; gain = 0.000
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_SPI_1.0'.
+INFO: [IP_Flow 19-795] Syncing license key meta-data
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_DeSerializer.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0_S00_AXI.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v_1_0_M_AXIS.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Data_processing.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Grar_Box_6b_2_12b.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/utile_To_Pulse.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v1_0.v:]
+ipx::edit_ip_in_project: Time (s): cpu = 00:00:09 ; elapsed = 00:00:10 . Memory (MB): peak = 2854.934 ; gain = 0.000
+update_compile_order -fileset sources_1
+ipx::merge_project_changes files [ipx::current_core]
+WARNING: [IP_Flow 19-5226] Project source file 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml' ignored by IP packager.
+set_property core_revision 3 [ipx::current_core]
+ipx::update_source_project_archive -component [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+ipx::move_temp_component_back -component [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0'
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Oct  2 23:18:21 2020...

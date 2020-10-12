@@ -1,0 +1,102 @@
+#-----------------------------------------------------------
+# Vivado v2019.1 (64-bit)
+# SW Build 2552052 on Fri May 24 14:49:42 MDT 2019
+# IP Build 2548770 on Fri May 24 18:01:18 MDT 2019
+# Start of session at: Thu Oct  1 10:14:49 2020
+# Process ID: 10532
+# Current directory: E:/A_A/AD_9637/managed_ip_project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent10912 E:\A_A\AD_9637\managed_ip_project\managed_ip_project.xpr
+# Log file: E:/A_A/AD_9637/managed_ip_project/vivado.log
+# Journal file: E:/A_A/AD_9637/managed_ip_project\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/A_A/AD_9637/managed_ip_project/managed_ip_project.xpr
+create_peripheral xilinx.com user AD_9637_IF 1.0 -dir E:/A_A/AD_9637/managed_ip_project/../ip_repo
+add_peripheral_interface S00_AXI -interface_mode slave -axi_type lite [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]
+set_property VALUE 34 [ipx::get_bus_parameters WIZ_NUM_REG -of_objects [ipx::get_bus_interfaces S00_AXI -of_objects [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]]]
+generate_peripheral -driver -bfm_example_design -debug_hw_example_design [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]
+write_peripheral [ipx::find_open_core xilinx.com:user:AD_9637_IF:1.0]
+set_property  ip_repo_paths  {E:/A_A/AD_9637/managed_ip_project/../ip_repo/AD_9637_IF_1.0 E:/A_A/AD_9637/ip_repo/AD_9637_SPI_1.0} [current_project]
+update_ip_catalog -rebuild
+ipx::edit_ip_in_project -upgrade true -name AD_9637_IF_v1_0_project -directory E:/A_A/AD_9637/managed_ip_project/managed_ip_project.tmp/AD_9637_IF_v1_0_project e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_DeSerializer.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_DeSerializer.v
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Grar_Box_6b_2_12b.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Grar_Box_6b_2_12b.v
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/utile_To_Pulse.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/utile_To_Pulse.v
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+launch_runs impl_1 -jobs 4
+wait_on_run impl_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v_1_0_M_AXIS.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/AD_9637_IF_v_1_0_M_AXIS.v
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+close [ open E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Data_processing.v w ]
+add_files E:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/hdl/Data_processing.v
+update_compile_order -fileset sources_1
+reset_run synth_1
+launch_runs impl_1 -jobs 4
+wait_on_run impl_1
+open_run impl_1
+reset_run synth_1
+launch_runs impl_1 -jobs 4
+wait_on_run impl_1
+close_design
+open_run impl_1
+show_objects -name gen_adc0 [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ CARRY.*.* } ]
+show_objects -name rx_adc_idelay_adc0 [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ CARRY.*.* } ]
+show_objects -name idelaye2 [get_cells -hierarchical -filter { PRIMITIVE_TYPE =~ CARRY.*.* } ]
+ipx::merge_project_changes files [ipx::current_core]
+ipx::merge_project_changes hdl_parameters [ipx::current_core]
+set_property abstraction_type_vlnv xilinx.com:interface:axis_rtl:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:interface:axis:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map CLK [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::add_port_map TVALID [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tvalid [ipx::get_port_maps TVALID -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TLAST [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tlast [ipx::get_port_maps TLAST -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TKEEP [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tkeep [ipx::get_port_maps TKEEP -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TREADY [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tready [ipx::get_port_maps TREADY -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::add_port_map TDATA [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_tdata [ipx::get_port_maps TDATA -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+set_property abstraction_type_vlnv xilinx.com:signal:clock_rtl:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:signal:clock:1.0 [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TVALID [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TLAST [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TKEEP [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TREADY [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::remove_port_map TDATA [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+ipx::add_port_map CLK [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]
+set_property physical_name M_AXIS_aclk [ipx::get_port_maps CLK -of_objects [ipx::get_bus_interfaces M_AXIS_aclk -of_objects [ipx::current_core]]]
+ipx::infer_bus_interface {M_AXIS_tready M_AXIS_tkeep M_AXIS_tlast M_AXIS_tvalid M_AXIS_tdata} xilinx.com:interface:axis_rtl:1.0 [ipx::current_core]
+set_property core_revision 2 [ipx::current_core]
+ipx::update_source_project_archive -component [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+reset_run synth_1
+launch_runs impl_1 -jobs 4
+wait_on_run impl_1
+close_design
+ipx::merge_project_changes files [ipx::current_core]
+ipx::merge_project_changes files [ipx::current_core]
+ipx::merge_project_changes hdl_parameters [ipx::current_core]
+close_project
+ipx::edit_ip_in_project -upgrade true -name AD_9637_IF_v1_0_project -directory E:/A_A/AD_9637/managed_ip_project/managed_ip_project.tmp/AD_9637_IF_v1_0_project e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0/component.xml
+update_compile_order -fileset sources_1
+ipx::merge_project_changes files [ipx::current_core]
+set_property core_revision 3 [ipx::current_core]
+ipx::update_source_project_archive -component [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+ipx::move_temp_component_back -component [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path e:/A_A/AD_9637/ip_repo/AD_9637_IF_1.0

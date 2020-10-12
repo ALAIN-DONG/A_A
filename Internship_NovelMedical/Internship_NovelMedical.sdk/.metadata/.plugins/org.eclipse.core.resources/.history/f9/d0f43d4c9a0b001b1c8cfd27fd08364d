@@ -1,0 +1,154 @@
+/*
+ *
+ * www.osrc.cn
+ * www.milinker.com
+ * copyright by nan jin mi lian dian zi www.osrc.cn
+*/
+
+#include "timer_intr.h"
+#define RESET_RX_CNTR_LIMIT	400
+
+
+volatile int TcpTmrFlag;
+
+#ifndef USE_SOFTETH_ON_ZYNQ
+static int ResetRxCntr = 0;
+extern struct netif server_netif;
+#endif
+
+
+#define MAX_COUNT_TCP (1*MULT_SPEED)
+volatile int TcpFastTmrFlag = 0;
+volatile int TcpSlowTmrFlag = 0;
+int count_Tcp_Flag = 0;
+
+
+#define MAX_COUNT_Oled_Show_Flag (1*MULT_SPEED)
+int count_Oled_Show_Flag = 0;
+volatile int Oled_Show_Flag = 0;
+
+#define MAX_COUNT_Sampling_Flag (1*MULT_SPEED/10) //放慢的倍数//越高-->越慢
+int count_Sampling_Flag = 0;
+volatile int Sampling_Flag = 0;
+
+#define MAX_COUNT_Auto_run_Flag (1*MULT_SPEED/100)
+int count_Auto_run_Flag = 0;
+volatile int Auto_run_Flag = 0;
+
+#define MAX_COUNT_auto_transmission_Flag (1*MULT_SPEED/1000)
+int count_auto_transmission_Flag = 0;
+volatile int auto_transmission_Flag = 0;
+
+
+static void TimerIntrHandler(void *CallBackRef)
+{
+	XScuTimer *TimerInstancePtr = (XScuTimer *) CallBackRef;
+
+	if (++count_auto_transmission_Flag >= MAX_COUNT_auto_transmission_Flag){
+		count_auto_transmission_Flag = 0;
+		auto_transmission_Flag = 1;
+	}
+
+	if (++count_Sampling_Flag >= MAX_COUNT_Sampling_Flag){
+		count_Sampling_Flag = 0;
+		Sampling_Flag = 1;
+	}
+
+	if (++count_Auto_run_Flag >= MAX_COUNT_Auto_run_Flag){
+		count_Auto_run_Flag = 0;
+		Auto_run_Flag = 1;
+	}
+
+	if (++count_Oled_Show_Flag >= MAX_COUNT_Oled_Show_Flag){
+		count_Oled_Show_Flag = 0;
+		Oled_Show_Flag = 1;
+	}
+
+
+
+
+
+
+	//Frequency division -- relate with TimerLoadValue
+	if (++count_Tcp_Flag >MAX_COUNT_TCP)
+		count_Tcp_Flag = 0;
+
+
+
+	if (count_Tcp_Flag == 0){
+		/* we need to call tcp_fasttmr & tcp_slowtmr at intervals specified
+		 * by lwIP. It is not important that the timing is absoluetly accurate.
+		 */
+		static int odd = 1;
+#if LWIP_DHCP==1
+		static int dhcp_timer = 0;
+#endif
+		 TcpFastTmrFlag = 1;
+
+		odd = !odd;
+#ifndef USE_SOFTETH_ON_ZYNQ
+		ResetRxCntr++;
+#endif
+		if (odd) {
+			TcpSlowTmrFlag = 1;
+#if LWIP_DHCP==1
+			dhcp_timer++;
+			dhcp_timoutcntr--;
+			dhcp_fine_tmr();
+			if (dhcp_timer >= 120) {
+				dhcp_coarse_tmr();
+				dhcp_timer = 0;
+			}
+#endif
+		}
+
+		/* For providing an SW alternative for the SI #692601. Under heavy
+		 * Rx traffic if at some point the Rx path becomes unresponsive, the
+		 * following API call will ensures a SW reset of the Rx path. The
+		 * API xemacpsif_resetrx_on_no_rxdata is called every 100 milliseconds.
+		 * This ensures that if the above HW bug is hit, in the worst case,
+		 * the Rx path cannot become unresponsive for more than 100
+		 * milliseconds.
+		 */
+#ifndef USE_SOFTETH_ON_ZYNQ
+		if (ResetRxCntr >= RESET_RX_CNTR_LIMIT) {
+			xemacpsif_resetrx_on_no_rxdata(&server_netif);
+			ResetRxCntr = 0;
+		}
+#endif
+	}
+	XScuTimer_ClearInterruptStatus(TimerInstancePtr);
+}
+
+
+
+
+void Timer_start(XScuTimer *TimerPtr)
+{
+	    XScuTimer_Start(TimerPtr);
+}
+
+void Timer_Setup_Intr_System(XScuGic *GicInstancePtr,XScuTimer *TimerInstancePtr, u16 TimerIntrId)
+{
+        XScuGic_Connect(GicInstancePtr, TimerIntrId,
+                        (Xil_ExceptionHandler)TimerIntrHandler,//set up the timer interrupt
+                        (void *)TimerInstancePtr);
+
+        XScuGic_Enable(GicInstancePtr, TimerIntrId);//enable the interrupt for the Timer at GIC
+        XScuTimer_EnableInterrupt(TimerInstancePtr);//enable interrupt on the timer
+ }
+
+int Timer_init(XScuTimer *TimerPtr,u32 Load_Value,u32 DeviceId)
+{
+     XScuTimer_Config *TMRConfigPtr;     //timer config
+     //私有定时器初始化
+     TMRConfigPtr = XScuTimer_LookupConfig(DeviceId);
+     XScuTimer_CfgInitialize(TimerPtr, TMRConfigPtr,TMRConfigPtr->BaseAddr);
+     //XScuTimer_SelfTest(&Timer);
+     //加载计数周期，私有定时器的时钟为CPU的一半，为333MHZ,如果计数1S,加载值为1sx(333x1000x1000)(1/s)-1=0x13D92D3F
+     XScuTimer_LoadTimer(TimerPtr, Load_Value);//F8F00600+0=reg=F8F00600
+     //自动装载
+     XScuTimer_EnableAutoReload(TimerPtr);//F8F00600+8=reg=F8F00608
+
+     return 1;
+}

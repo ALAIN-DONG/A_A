@@ -1,0 +1,151 @@
+/*
+ * Copyright (C) 2010 - 2019 Xilinx, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ *
+ */
+/*
+* platform_zynq.c
+*
+* Zynq platform specific functions.
+*
+* 02/29/2012: UART initialization is removed. Timer initializations are
+* removed. All unnecessary include files and hash defines are removed.
+* 03/01/2013: Timer initialization is added back. Support for SI #692601 is
+* added in the timer callback. The SI #692601 refers to the following issue.
+*
+* The EmacPs has a HW bug on the Rx path for heavy Rx traffic.
+* Under heavy Rx traffic because of the HW bug there are times when the Rx path
+* becomes unresponsive. The workaround for it is to check for the Rx path for
+* traffic (by reading the stats registers regularly). If the stats register
+* does not increment for sometime (proving no Rx traffic), the function resets
+* the Rx data path.
+*
+* </pre>
+ */
+
+#ifdef __arm__
+
+#include "platform_config.h"
+#include "platform.h"
+#ifdef PLATFORM_ZYNQ
+#include "xparameters.h"
+#include "xparameters_ps.h"	/* defines XPAR values */
+#include "xil_cache.h"
+#include "xscugic.h"
+#include "lwip/tcp.h"
+#include "xil_printf.h"
+#include "netif/xadapter.h"
+#include "xscutimer.h"
+#include "xtime_l.h"
+
+#define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
+#define TIMER_DEVICE_ID		XPAR_SCUTIMER_DEVICE_ID
+#define INTC_BASE_ADDR		XPAR_SCUGIC_0_CPU_BASEADDR
+#define INTC_DIST_BASE_ADDR	XPAR_SCUGIC_0_DIST_BASEADDR
+#define TIMER_IRPT_INTR		XPAR_SCUTIMER_INTR
+
+#define RESET_RX_CNTR_LIMIT	400
+
+void tcp_fasttmr(void);
+void tcp_slowtmr(void);
+
+static XScuTimer TimerInstance;
+
+#if LWIP_DHCP==1
+volatile int dhcp_timoutcntr = 24;
+void dhcp_fine_tmr();
+void dhcp_coarse_tmr();
+#endif
+
+
+#ifdef STDOUT_IS_16550
+ #include "xuartns550_l.h"
+
+ #define UART_BAUD 9600
+#endif
+
+void
+enable_caches()
+{
+#ifdef __PPC__
+    Xil_ICacheEnableRegion(CACHEABLE_REGION_MASK);
+    Xil_DCacheEnableRegion(CACHEABLE_REGION_MASK);
+#elif __MICROBLAZE__
+#ifdef XPAR_MICROBLAZE_USE_ICACHE
+    Xil_ICacheEnable();
+#endif
+#ifdef XPAR_MICROBLAZE_USE_DCACHE
+    Xil_DCacheEnable();
+#endif
+#endif
+}
+
+void
+disable_caches()
+{
+#ifdef __MICROBLAZE__
+#ifdef XPAR_MICROBLAZE_USE_DCACHE
+    Xil_DCacheDisable();
+#endif
+#ifdef XPAR_MICROBLAZE_USE_ICACHE
+    Xil_ICacheDisable();
+#endif
+#endif
+}
+
+void
+init_uart()
+{
+#ifdef STDOUT_IS_16550
+    XUartNs550_SetBaud(STDOUT_BASEADDR, XPAR_XUARTNS550_CLOCK_HZ, UART_BAUD);
+    XUartNs550_SetLineControlReg(STDOUT_BASEADDR, XUN_LCR_8_DATA_BITS);
+#endif
+    /* Bootrom/BSP configures PS7/PSU UART to 115200 bps */
+}
+
+void init_platform()
+{
+    enable_caches();
+    init_uart();
+	return;
+}
+
+void cleanup_platform()
+{
+	Xil_ICacheDisable();
+	Xil_DCacheDisable();
+	return;
+}
+
+u64_t get_time_ms()
+{
+#define COUNTS_PER_MILLI_SECOND (COUNTS_PER_SECOND/1000)
+	XTime tCur = 0;
+	XTime_GetTime(&tCur);
+	return (tCur/COUNTS_PER_MILLI_SECOND);
+}
+
+#endif
+#endif

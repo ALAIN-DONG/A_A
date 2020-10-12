@@ -1,0 +1,99 @@
+{
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.0.19  2019-03-26 bk=1.5019 VDI=41 GEI=35 GUI=JA:9.0 non-TLS
+#  -string -flagsOSRD
+preplace port DDR -pg 1 -lvl 7 -x 2420 -y 330 -defaultsOSRD
+preplace port FIXED_IO -pg 1 -lvl 7 -x 2420 -y 350 -defaultsOSRD
+preplace port adc0_fco_in_n -pg 1 -lvl 0 -x 0 -y 750 -defaultsOSRD
+preplace port adc1_fco_in_p -pg 1 -lvl 0 -x 0 -y 960 -defaultsOSRD
+preplace port adc1_fco_in_n -pg 1 -lvl 0 -x 0 -y 980 -defaultsOSRD
+preplace port adc0_dco_in_p -pg 1 -lvl 0 -x 0 -y 1000 -defaultsOSRD
+preplace port adc0_dco_in_n -pg 1 -lvl 0 -x 0 -y 1020 -defaultsOSRD
+preplace port adc1_dco_in_p -pg 1 -lvl 0 -x 0 -y 1040 -defaultsOSRD
+preplace port adc0_fco_in_p -pg 1 -lvl 0 -x 0 -y 770 -defaultsOSRD
+preplace port adc1_dco_in_n -pg 1 -lvl 0 -x 0 -y 1060 -defaultsOSRD
+preplace port clk_to_adc0_p -pg 1 -lvl 7 -x 2420 -y 900 -defaultsOSRD
+preplace port clk_to_adc0_n -pg 1 -lvl 7 -x 2420 -y 920 -defaultsOSRD
+preplace port clk_to_adc1_p -pg 1 -lvl 7 -x 2420 -y 940 -defaultsOSRD
+preplace port clk_to_adc1_n -pg 1 -lvl 7 -x 2420 -y 960 -defaultsOSRD
+preplace port AD_PD_out -pg 1 -lvl 7 -x 2420 -y 230 -defaultsOSRD
+preplace port spi_cs1 -pg 1 -lvl 7 -x 2420 -y 80 -defaultsOSRD
+preplace port spi_cs0 -pg 1 -lvl 7 -x 2420 -y 60 -defaultsOSRD
+preplace port spi_sdio -pg 1 -lvl 7 -x 2420 -y 120 -defaultsOSRD
+preplace port spi_sclk -pg 1 -lvl 7 -x 2420 -y 100 -defaultsOSRD
+preplace port AD_SYNC_out -pg 1 -lvl 7 -x 2420 -y 250 -defaultsOSRD
+preplace portBus adc0_data_in_p -pg 1 -lvl 0 -x 0 -y 710 -defaultsOSRD
+preplace portBus adc0_data_in_n -pg 1 -lvl 0 -x 0 -y 690 -defaultsOSRD
+preplace portBus adc1_data_in_p -pg 1 -lvl 0 -x 0 -y 940 -defaultsOSRD
+preplace portBus adc1_data_in_n -pg 1 -lvl 0 -x 0 -y 730 -defaultsOSRD
+preplace portBus led_data_show -pg 1 -lvl 7 -x 2420 -y 980 -defaultsOSRD
+preplace portBus done -pg 1 -lvl 7 -x 2420 -y 170 -defaultsOSRD
+preplace portBus OLED_0 -pg 1 -lvl 7 -x 2420 -y 610 -defaultsOSRD
+preplace inst processing_system7_0 -pg 1 -lvl 5 -x 1790 -y 400 -defaultsOSRD
+preplace inst ps7_0_axi_periph -pg 1 -lvl 2 -x 660 -y 520 -defaultsOSRD
+preplace inst rst_ps7_0_200M -pg 1 -lvl 1 -x 220 -y 410 -defaultsOSRD
+preplace inst util_vector_logic_0 -pg 1 -lvl 6 -x 2250 -y 170 -defaultsOSRD
+preplace inst axis_data_fifo_0 -pg 1 -lvl 2 -x 660 -y 790 -defaultsOSRD
+preplace inst proc_sys_reset_0 -pg 1 -lvl 1 -x 220 -y 850 -defaultsOSRD
+preplace inst axi_dma_0 -pg 1 -lvl 3 -x 1020 -y 410 -defaultsOSRD
+preplace inst axi_mem_intercon -pg 1 -lvl 4 -x 1370 -y 380 -defaultsOSRD
+preplace inst rst_ps7_0_5M -pg 1 -lvl 1 -x 220 -y 140 -defaultsOSRD
+preplace inst Axi_Oled_0 -pg 1 -lvl 5 -x 1790 -y 610 -defaultsOSRD
+preplace inst AD_9637_IF_0 -pg 1 -lvl 5 -x 1790 -y 950 -defaultsOSRD
+preplace inst AD_9637_SPI_0 -pg 1 -lvl 5 -x 1790 -y 120 -defaultsOSRD
+preplace netloc processing_system7_0_FCLK_CLK0 1 0 6 40 310 460 310 840 310 1200 510 1550 530 2030
+preplace netloc processing_system7_0_FCLK_RESET0_N 1 0 6 20 260 NJ 260 NJ 260 NJ 260 NJ 260 2050
+preplace netloc rst_ps7_0_200M_peripheral_aresetn 1 1 4 480 340 850 300 1210 530 1520
+preplace netloc processing_system7_0_FCLK_CLK1 1 4 2 1560 690 2020
+preplace netloc adc0_fco_in_n_0_1 1 0 5 20J 740 400J 940 NJ 940 NJ 940 NJ
+preplace netloc adc1_fco_in_p_0_1 1 0 5 NJ 960 NJ 960 NJ 960 NJ 960 NJ
+preplace netloc adc1_fco_in_n_0_1 1 0 5 NJ 980 NJ 980 NJ 980 NJ 980 NJ
+preplace netloc adc0_dco_in_p_0_1 1 0 5 NJ 1000 NJ 1000 NJ 1000 NJ 1000 NJ
+preplace netloc adc0_dco_in_n_0_1 1 0 5 NJ 1020 NJ 1020 NJ 1020 NJ 1020 NJ
+preplace netloc adc1_dco_in_p_0_1 1 0 5 NJ 1040 NJ 1040 NJ 1040 NJ 1040 NJ
+preplace netloc adc0_data_in_p_0_1 1 0 5 20J 720 440J 890 820J 840 NJ 840 NJ
+preplace netloc adc0_fco_in_p_0_1 1 0 5 30J 750 390J 920 NJ 920 NJ 920 NJ
+preplace netloc adc0_data_in_n_0_1 1 0 5 NJ 690 450J 880 840J 860 NJ 860 NJ
+preplace netloc adc1_data_in_p_0_1 1 0 5 30J 950 470J 910 850J 880 NJ 880 NJ
+preplace netloc adc1_data_in_n_0_1 1 0 5 NJ 730 430J 900 NJ 900 NJ 900 NJ
+preplace netloc adc1_dco_in_n_0_1 1 0 5 NJ 1060 NJ 1060 NJ 1060 NJ 1060 NJ
+preplace netloc AD_9637_IF_0_clk_to_adc0_p 1 5 2 NJ 900 NJ
+preplace netloc AD_9637_IF_0_clk_to_adc0_n 1 5 2 NJ 920 NJ
+preplace netloc AD_9637_IF_0_clk_to_adc1_p 1 5 2 NJ 940 NJ
+preplace netloc AD_9637_IF_0_clk_to_adc1_n 1 5 2 NJ 960 NJ
+preplace netloc AD_9637_IF_0_led_data_show 1 5 2 NJ 980 NJ
+preplace netloc AD_9637_SPI_0_AD_PD_out 1 5 2 2080J 230 NJ
+preplace netloc AD_9637_SPI_0_spi_cs1 1 5 2 NJ 80 NJ
+preplace netloc AD_9637_SPI_0_spi_cs0 1 5 2 NJ 60 NJ
+preplace netloc Net 1 5 2 2090J 110 2400J
+preplace netloc AD_9637_SPI_0_spi_sclk 1 5 2 NJ 100 NJ
+preplace netloc AD_9637_SPI_0_AD_SYNC_out 1 5 2 2070J 250 NJ
+preplace netloc AD_9637_SPI_0_done 1 5 1 2090J 140n
+preplace netloc util_vector_logic_0_Res 1 6 1 NJ 170
+preplace netloc AD_9637_IF_0_M_AXIS_aclk 1 0 6 40 710 410 1160 NJ 1160 NJ 1160 NJ 1160 2020
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 1 1 420 780n
+preplace netloc AD_9637_IF_0_M_AXIS_aresetn 1 0 6 40 1170 NJ 1170 NJ 1170 NJ 1170 NJ 1170 2030
+preplace netloc axi_dma_0_s2mm_introut 1 3 2 1190J 500 1530
+preplace netloc processing_system7_0_FCLK_CLK2 1 0 6 20 250 490 230 NJ 230 NJ 230 1550 240 2060
+preplace netloc processing_system7_0_FCLK_RESET2_N 1 0 6 40 240 500J 250 NJ 250 NJ 250 1520J 270 2040
+preplace netloc rst_ps7_0_5M_peripheral_aresetn 1 1 4 470 220 NJ 220 NJ 220 1530
+preplace netloc Axi_Oled_0_OLED 1 5 2 NJ 610 NJ
+preplace netloc processing_system7_0_DDR 1 5 2 NJ 330 NJ
+preplace netloc ps7_0_axi_periph_M00_AXI 1 2 1 820 370n
+preplace netloc AD_9637_IF_0_M_AXIS 1 1 5 510 700 NJ 700 NJ 700 NJ 700 2020
+preplace netloc ps7_0_axi_periph_M03_AXI 1 2 3 NJ 550 NJ 550 1530
+preplace netloc axi_dma_0_M_AXI_S2MM 1 3 1 1220 320n
+preplace netloc ps7_0_axi_periph_M02_AXI 1 2 3 810J 210 NJ 210 1520
+preplace netloc axi_mem_intercon_M00_AXI 1 4 1 N 380
+preplace netloc processing_system7_0_FIXED_IO 1 5 2 NJ 350 NJ
+preplace netloc ps7_0_axi_periph_M01_AXI 1 2 3 820J 520 NJ 520 1540
+preplace netloc processing_system7_0_M_AXI_GP0 1 1 5 510 240 NJ 240 NJ 240 1530J 250 2020
+preplace netloc axis_data_fifo_0_M_AXIS 1 2 1 830 390n
+levelinfo -pg 1 0 220 660 1020 1370 1790 2250 2420
+pagesize -pg 1 -db -bbox -sgen -180 0 2600 1180
+"
+}
+{
+   "da_axi4_cnt":"7",
+   "da_ps7_cnt":"1"
+}

@@ -1,0 +1,629 @@
+/*
+ * Operations.c
+ *
+ *  Created on: 2020年10月9日
+ *      Author: Alain
+ */
+
+#include "operations.h"
+
+volatile int auto_run_on = 0;
+volatile int auto_transmission_on = 0;
+volatile int auto_Sampling_on = 0;
+
+
+//修改指定adc的测试值（模式自动切换为测试模式）
+//change tested value in specified ADC (the function mode will be changed automatically into test mode)
+void change_adc_test_value(u32 value, int num_adc){
+	u16 value_temp = 0;
+
+	if(num_adc == 0){	//修改测试值
+		desactive_Adc1();
+		active_Adc0();
+	}else if(num_adc == 1){
+		desactive_Adc0();
+		active_Adc1();
+	}
+	Write_reg(0x000D, 0x08);
+
+	value_temp = value&0x0F;
+	value_temp = value_temp << 4;
+	Write_reg(0x0019, value_temp);
+
+	value_temp = value&0xFF0;
+	value_temp = value_temp >> 4;
+	Write_reg(0x001A, value_temp);
+
+	desactive_Adc1();
+	desactive_Adc0();
+}
+
+
+//初始化spi驱动
+//init spi driver
+void init_spi(void){
+	init_regs();
+	set_ad_pd();
+	clr_ad_sync();
+
+	usleep(1000);
+
+	desactive_Adc1();
+	active_Adc0();
+	Write_reg(0x0000, 0x3C);//soft reset
+	Write_reg(0x000B, 0x05);//change div_clk_internal
+	Write_reg(0x0109, 0x03);//set sync clock
+
+	desactive_Adc0();
+	active_Adc1();
+	Write_reg(0x0000, 0x3C);//soft reset
+	Write_reg(0x000B, 0x05);//change div_clk_internal
+	Write_reg(0x0109, 0x03);//set sync clock
+
+	desactive_Adc1();
+	desactive_Adc0();
+	set_ad_sync();
+	clr_ad_pd();
+
+	xil_printf("SPI initialization finished\r\n");
+}
+
+//初始化所有idelay模块
+//initial all idelay module
+void init_idelay(){
+	int channel;
+
+	//重置idelayctrl
+	option_idelayctrl_rst();
+	//检查 idelayctrl是否ready
+	while(!ReadSpecifiedData(0,8)){
+		sleep(1);
+		option_idelayctrl_rst();
+	};
+	xil_printf("idelayctrl reset finished\r\n");
+
+	for (channel = 0; channel < 16; channel ++){
+		option_serdes_ce(channel,1);//enable iserdesE2
+
+		option_idelay_cntvaluein(channel, 0);
+		option_idelay_ld(channel);//清空cnt(设置tap值为0)
+	}
+
+	xil_printf("IDELAY initialization finished\r\n");
+}
+
+//初始化所有色弱的是模块，并自动校准，进行位对齐
+//initial all serdes modules, auto calibrate to realize bit alignment
+void auto_init_serdes(){
+	int try_times = 0;
+	int channel;
+	u32 temp_val;
+
+	//重置所有serdes
+	option_serdes_rst();
+
+	change_adc_test_value(0x3F, 0);
+	change_adc_test_value(0x3F, 1);
+
+	// 进行bitslip循环操作自动校准数据
+	for (channel = 0; channel < 16; channel ++){
+		option_serdes_ce(channel,1);
+		temp_val = ReadSpecifiedData(channel, 12);
+		while((temp_val != 0x3F)){
+			if(try_times > 20){
+				xil_printf("channel %d calibration Failed!\r\n", channel);
+				break;
+			}
+			try_times ++ ;
+			if((temp_val == 0xFC0) || (temp_val == 0xF81) ||(temp_val == 0xF03) ||(temp_val == 0x7E0) ||(temp_val == 0x3F0)){
+				option_bit_order_flip(channel);
+			}else{
+				option_serdes_bitslip(channel);
+			}
+			temp_val = ReadSpecifiedData(channel, 12);
+			xil_printf("channel %d current_value: %x\r\n", channel, temp_val);
+			usleep(10000);
+			}
+
+		xil_printf("channel %d Auto-Calibration Succeed!\r\n", channel);
+		try_times = 0;
+	}
+}
+
+//最终检查每路信号是否正确，并生成报告
+//final check for every channel and generate a report
+int final_check(void){
+	u16 value_test = 0;
+	u16 value_temp = 0;
+	int try_times = 0;
+	int return_val = 0;
+
+	int error_times = 0;
+
+	int result_tab[16] = {0};
+	int error_tab[16] = {0};
+	int error_ch_cnt;
+
+
+	error_ch_cnt = 0;
+	for(int channel = 0; channel < 16; channel++){
+		error_times = 0;
+
+		if(channel < 8){
+			desactive_Adc1();
+			active_Adc0();
+		}else{
+			desactive_Adc0();
+			active_Adc1();
+		}
+
+		while (value_test < 60){
+			value_temp = value_test&0x0F;
+			value_temp = value_temp << 4;
+			Write_reg(0x0019, value_temp);
+			value_temp = value_test&0xFF0;
+			value_temp = value_temp >> 4;
+			Write_reg(0x001A, value_temp);//将测试值（0-60）写入专用寄存器
+			usleep(1000);
+
+			if(check_value_shift_12b(ReadSpecifiedData(channel,12), value_test) != (-1)){//查看是否为测试值的移位
+	//			xil_printf("    value correct!\r\n");
+				value_test ++;
+			}else{//若不对，则再次读取，尝试最多20次
+				try_times++;
+			}
+
+			if(try_times > 20){//20次尝试仍然不是正确的结果，则标记为错误通道，此通道结果不可信，需手动调整
+	//			xil_printf("****value %d is not correct in channel [%d]\r\n", value_test, channel);
+				error_times ++;
+				value_test ++;
+			}
+		}
+
+		xil_printf("**ch %d totle error times is %d\r\n",channel, error_times);//每条通道的在60次测试中的错误次数都会被打印出来
+		result_tab[channel] = error_times; //每条通路的错误信息都会被保存在数组中
+		if(error_times!=0){
+			error_tab[error_ch_cnt] = channel;
+			error_ch_cnt ++;
+		}
+	}
+
+	xil_printf("error channel :  ");
+	for (int i = 0; i < error_ch_cnt; i ++){
+		xil_printf(" %d,  ", i, error_tab[i]);
+	}
+	if (error_ch_cnt==0){
+		xil_printf(" none ");
+		return_val = 0;
+	}else{
+		return_val = 1;
+	}
+	xil_printf(" \r\n");
+
+	if(error_ch_cnt == 0){
+		xil_printf("All Channels can receive right datas\r\n");
+	}else{
+		xil_printf("Some channels have not been configured correctly, please refer to the results above and check IDELAY\r\n");
+	}
+	return return_val;
+}
+
+//对系统功能进行默认配置
+//default setting for the system
+void default_system_setting(){
+	//关闭所有adc SPI使能
+	desactive_Adc0();
+	desactive_Adc1();
+	//led灯默认显示adc0 ch0
+	led_show_adc0();
+
+	//默认计算次数为0 （为原值）
+	SetValue_add_times(0);
+
+	//默认设置adc0/adc1输出为用户自定义数值 0xABC
+	change_adc_test_value(0xABC, 0);
+	change_adc_test_value(0xABC, 1);
+
+	for(int ch=0; ch<16; ch++){
+		option_serdes_ce(ch, 1);//打开所有serdes使能
+		option_active_calcu(ch);//默认打开所有通道的计算模块
+	}
+}
+
+
+int Read_Order_New(char Order_Input[], u32 *Order_Addr, u32 *Order_Data, u32 *Operation, int *Order_Channel){
+	//declaration
+	int return_val;
+
+	int flag_champ1 = 0;
+	int flag_champ2 = 0;
+	int flag_champ1_addr = 0;
+	int flag_champ1_oper = 0;
+	int flag_channel = 0;
+
+	char Order_Head;
+	char Order_rw_opt;// 1-->read / 0-->write
+	char Order_champ1[8];
+	char Order_champ2[8];
+	char Order_channel[2];
+
+	//Initialization
+	for (int i=0;i<8;i++) Order_champ1[i]=0;
+	for (int i=0;i<8;i++) Order_champ2[i]=0;
+	for (int i=0;i<2;i++) Order_channel[i]=0;
+	*Order_Addr = 0;
+	*Order_Data	= 0;
+	*Operation	= 0;
+	*Order_Channel = 0;
+
+	Order_Head 		= 	Order_Input[0];
+	Order_rw_opt	=	Order_Input[1];
+
+	switch (Order_Head){
+	case	'z':
+	case	'Z'	:	return_val = 0;
+					flag_champ1_addr = 1;
+					flag_champ1 = 1;
+					if (Order_rw_opt == '0'){ //write
+						flag_champ2 = 1;// need data
+						*Operation = 0x00;
+					}else if(Order_rw_opt == '1'){
+						flag_champ2 = 0;// don not need data
+						*Operation = 0x01;
+					}else{
+						return_val = -1; // error
+					};
+					break;
+	case	'y':
+	case	'Y':	return_val = 10;
+					flag_champ1_addr = 1;
+					flag_champ1 = 1;
+					if (Order_rw_opt == '0'){ //write
+						flag_champ2 = 1;// need data
+						*Operation = 0x00;
+					}else if(Order_rw_opt == '1'){
+						flag_champ2 = 0;// do not need data
+						*Operation = 0x01;
+					}else{
+						return_val = -1; // error
+					};
+					break;
+	case	's':
+	case	'S':	return_val = 20;
+					flag_champ1_oper = 1;
+					flag_champ1 = 1;
+					flag_champ2 = 0;
+					break;
+
+	case	'w':
+	case	'W':	return_val = 30;
+					flag_champ1 = 1;
+					flag_champ1_addr = 1;
+					flag_champ2 = 1;
+					break;
+
+	case	'r':
+	case	'R':	return_val = 40;
+					flag_champ1_addr = 1;
+					flag_champ1 = 1;
+					flag_champ2 = 0;
+					break;
+
+	case	'i':
+	case	'I':	return_val = 50;
+					flag_channel = 1;
+					flag_champ1 = 1;
+					flag_champ1_oper = 1;
+					flag_champ2 = 1;
+					break;
+
+	case	'd':
+	case	'D':	return_val = 60;
+					flag_channel = 1;
+					flag_champ1_oper = 1;
+					flag_champ1 = 1;
+					flag_champ2 = 1;
+					break;
+
+	case	'a':
+	case	'A':	return_val = 70;
+					flag_channel = 1;
+					flag_champ1_oper = 1;
+					flag_champ1 = 1;
+					flag_champ2 = 1;
+					break;
+
+	default	:	return_val = 0;
+	}
+
+
+	if (flag_champ1){
+		Order_champ1[0]	=	Order_Input[3];
+		Order_champ1[1]	=	Order_Input[4];
+		Order_champ1[2]	=	Order_Input[5];
+		Order_champ1[3]	=	Order_Input[6];
+		Order_champ1[4]	=	Order_Input[7];
+		Order_champ1[5]	=	Order_Input[8];
+		Order_champ1[6]	=	Order_Input[9];
+		Order_champ1[7]	=	Order_Input[10];
+
+		if(flag_champ1_addr){
+			*Order_Addr = StringToHex(Order_champ1, 8);
+		}
+
+		if(flag_champ1_oper){
+			*Operation = StringToHex(Order_champ1, 8);
+			if(flag_channel){
+				*Operation = *Operation & 0xFFFFFF;
+			}
+		}
+
+		if(flag_channel){
+			Order_channel[0] = Order_Input[3];
+			Order_channel[1] = Order_Input[4];
+			*Order_Channel = StringHexToInt(Order_channel, 2);
+		}
+	}
+
+	if(flag_champ2){
+		Order_champ2[0]	=	Order_Input[12];
+		Order_champ2[1]	=	Order_Input[13];
+		Order_champ2[2]	=	Order_Input[14];
+		Order_champ2[3]	=	Order_Input[15];
+		Order_champ2[4]	=	Order_Input[16];
+		Order_champ2[5]	=	Order_Input[17];
+		Order_champ2[6]	=	Order_Input[18];
+		Order_champ2[7]	=	Order_Input[19];
+
+		*Order_Data = StringToHex(Order_champ2, 8);
+	}
+
+	flag_champ1 = 0;
+	flag_champ2 = 0;
+	flag_champ1_addr = 0;
+	flag_champ1_oper = 0;
+	flag_channel = 0;
+
+	return return_val;
+}
+
+
+
+void Execute_Order_New(int order_num, u32 New_Order_Addr, u32 New_Order_Data, u32 New_Operation, int channel, char *feedback){
+    u8	spi_read_result	= 0x00;
+    u32	temp_value_32 = 0;
+    u8	temp_value_8 = 0;
+    int temp_value_int = 0;
+
+    switch (order_num){
+        	case		0:	switch(New_Operation){//Z
+    								case	0:		// write ad9637_if regs //底层模式写interface中所有寄存器
+    												AD_9637_IF_mWriteReg(AD9637_IF_BASEADDR, New_Order_Addr, New_Order_Data);
+    												sprintf(feedback, "Low level Write IF Data [ %08lx ] at Addr: < %08lx > ", New_Order_Data, New_Order_Addr);
+    												break;
+    								case	1:		// read ad9637_if regs // 从底层读取interface内部的寄存器
+    												temp_value_32	=	AD_9637_IF_mReadReg(AD9637_IF_BASEADDR, New_Order_Addr);
+    												sprintf(feedback, "Low level Read IF Data at Addr: < %08lx > is  [ %08lx ] ", New_Order_Addr, temp_value_32);
+    												break;
+    								default	:		xil_printf("order non valide 0 \r\n");
+    												sprintf(feedback, "Low level Read / Write IF order non valide!");
+    												break;
+    								}
+    								break;
+
+        	case		10:	switch(New_Operation){//Y
+    								case	0:		// write ad9637_spi regs //底层模式写spi中所有寄存器
+    												AD_9637_SPI_mWriteReg(SPI_BASEADDR, New_Order_Addr, New_Order_Data);
+    												sprintf(feedback, "Low level Write SPI Data [ %08lx ] at Addr: < %08lx > ", New_Order_Data, New_Order_Addr);
+    												break;
+    								case	1:		// read ad9637_spi regs // 从底层读取spi内部的寄存器
+    												temp_value_32	=	AD_9637_SPI_mReadReg(SPI_BASEADDR, New_Order_Addr);
+    												sprintf(feedback, "Low level Read IF Data at  < %08lx > is  [ %08lx ] ", New_Order_Addr, temp_value_32);
+    												break;
+    								default	:		xil_printf("order non valide 10 \r\n");
+    												sprintf(feedback, "Low level Read / Write SPI order non valide!");
+    												break;
+    								}
+    								break;
+
+
+        	case		20:	switch(New_Operation){//S
+        	    					case	0x00:	desactive_Adc1(); active_Adc0();
+        	    									sprintf(feedback, "DO- ADC0     Actived |  ADC1 Not Actived");break;
+        	    					case	0x01:	desactive_Adc0(); active_Adc1();
+        	    									sprintf(feedback, "DO- ADC0 Not Actived |  ADC1     Actived");break;
+        	    					case	0x02:	desactive_Adc0(); desactive_Adc1();
+        	    									sprintf(feedback, "DO- ADC0 Not Actived |  ADC1 Not Actived");break;
+        	    					case	0x03:	active_Adc0(); active_Adc1();
+        	    									sprintf(feedback, "DO- ADC0     Actived |  ADC1     Actived");break;
+        	    					case	0x04:	active_Adc0();
+        	    									sprintf(feedback, "DO- ADC0     Actived");break;
+        	    					case	0x05:	desactive_Adc0();
+        	    									sprintf(feedback, "DO- ADC0 Not Actived");break;
+        	    					case	0x06:	active_Adc1();
+        	    									sprintf(feedback, "DO- ADC1     Actived");break;
+        	    					case	0x07:	desactive_Adc1();
+        	    									sprintf(feedback, "DO- ADC1 Not Actived");break;
+        	    					case	0x08:	xil_printf("state of adc0 is %d\r\n",get_Adc0_state());
+        	    									(get_Adc0_state()) ? sprintf(feedback, "GET- ADC0 is Actived") : sprintf(feedback, "GET- ADC0 is Not Actived"); break;
+        	    					case	0x09:	xil_printf("state of adc1 is %d\r\n",get_Adc1_state());
+        	    									(get_Adc1_state()) ? sprintf(feedback, "GET- ADC1 is Actived") : sprintf(feedback, "GET- ADC1 is Not Actived");break;
+
+        	    					case	0x10:	clr_ad_pd();
+        	    									sprintf(feedback, "DO- ad_pd Not Actived");break;
+        	    					case	0x11:	set_ad_pd();
+        	    									sprintf(feedback, "DO- ad_pd     Actived");break;
+        	    					case	0x12:	//get_ad_pd();
+        	    									(get_ad_pd()) ? sprintf(feedback, "GET- ad_pd is Actived") : sprintf(feedback, "GET- ad_pd is Not Actived");break;
+
+        	    					case	0x20:	clr_ad_sync();
+        	    									sprintf(feedback, "DO- ad_sync Not Actived");break;
+        	    					case	0x21:	set_ad_sync();
+        	    									sprintf(feedback, "DO- ad_sync    Actived");break;
+        	    					case	0x22:	//get_ad_sync();
+        	    									(get_ad_sync()) ? sprintf(feedback, "GET- ad_sync is Actived") : sprintf(feedback, "GET- ad_sync is Not Actived");break;
+
+        	    					case	0x30:	begin_to_go();
+        	    									sprintf(feedback, "DO- Transmission with chip begin!");break;
+        	    					case	0x31:	begin_to_go_ready();break;
+        	    									sprintf(feedback, "DO- Transmission with chip ready");
+        	    					case	0x32:	get_begin_to_go();
+        	    									(get_begin_to_go()) ? sprintf(feedback, "GET- Transmission is ready") : sprintf(feedback, "GET- Transmission has done or already began");break;
+
+        	    					case	0x40:	//read_done();
+        	    									(read_done()) ? sprintf(feedback, "GET- Transmission has done successfully") : sprintf(feedback, "GET- Still in transmission or Problemes occur");break;
+        	    					case	0x41:	temp_value_8 = read_data_from_datareg() & 0x000000FF;
+        	    									sprintf(feedback, "GET- Current data in data reg is (8bits): %02x ", temp_value_8);break;
+        	    					case	0x42:	temp_value_32 = read_cmd_from_ctrlreg() & 0x00FFFFFF;
+        	    									sprintf(feedback, "GET- Current data in data reg is (24bits): %6lx ", temp_value_32);break;
+        	    					default	:		xil_printf("order non valide 20 \r\n");
+        	    									sprintf(feedback, "SPI Operation order non valide!");break;
+        	    					}
+        	    					break;
+
+    		case		30:						Write_reg(New_Order_Addr, New_Order_Data&0xFF);
+												sprintf(feedback, "SPI Wrtie Data [ %02lx ] at Addr: < %03lx > ", New_Order_Data, New_Order_Addr);break;
+    		case		40:						temp_value_32 = Read_reg(New_Order_Addr, &spi_read_result);
+    											sprintf(feedback, "SPI Read Data at  < %03lx > is  [ %02lx ] ", New_Order_Addr, temp_value_32);break;//R
+
+    		case		50: switch(New_Operation){//I
+    								case	0x010:	option_idelay_ld(channel);
+    												sprintf(feedback, "DO- idelay LD in channel [%d] has been done",channel);break; //idelay_ld
+    								case	0x011:	temp_value_int = ReadSpecifiedData(channel, 0)? 1:0;
+    												sprintf(feedback, "GET- idelay LD reg state in channel [%d] is %d",channel, temp_value_int);break;
+
+    								case	0x020:	option_idelay_inc_ce(channel);
+    												sprintf(feedback, "DO- idelay CE and INC in channel [%d] has been done",channel);break; //idelay_inc_ce
+    								case	0x021:	option_idelay_ce(channel);
+    												sprintf(feedback, "DO- idelay CE in channel [%d] has been done",channel);break;
+    								case	0x022:	temp_value_int = ReadSpecifiedData(channel, 1)? 1:0;
+    												sprintf(feedback, "GET- idelay INC reg state in channel [%d] is %d",channel, temp_value_int);break;
+    								case	0x023:	temp_value_int = ReadSpecifiedData(channel, 2)? 1:0;
+    												sprintf(feedback, "GET- idelay CE reg state in channel [%d] is %d",channel, temp_value_int);break;
+
+    								case	0x030:	option_idelay_cntvaluein(channel, New_Order_Data&0xFF);
+    												sprintf(feedback, "DO- idelay cntvalunin in channel [%d] has been setted as [%02lx]",channel, New_Order_Data);break; //idelay_cntvaluein
+    								case	0x031:	temp_value_32 = ReadSpecifiedData(channel, 3);
+    												sprintf(feedback, "GET- idelay cntvalunin in channel [%d] had been setted as [%02lx]",channel, temp_value_32);break;
+
+
+    								case	0x040:	temp_value_32 = ReadSpecifiedData(channel, 7);
+    												sprintf(feedback, "GET- idelay cntvalunout in channel [%d] is [%02lx]",channel, temp_value_32);break;  //idelay_cntvalueout
+
+    								case	0x050:	//ReadSpecifiedData(channel, 8);//idelayctrl_ready
+    												(ReadSpecifiedData(channel, 8)) ? sprintf(feedback, "GET- IdelayCTRL is ready") : sprintf(feedback, "GET- IdelayCTRL is NOT ready");break;
+
+    								case	0x060:	option_idelayctrl_rst();
+    												sprintf(feedback, "DO- all idelay has been resetted");break;
+
+    								case	0x110:	option_serdes_bitslip(channel);
+    												sprintf(feedback, "DO- iserdes bitslip in channel [%d] has been done",channel);break;
+    								case	0x111:	temp_value_int = ReadSpecifiedData(channel, 4)? 1:0;
+    												sprintf(feedback, "GET- Iserdes bitslip reg state in channel [%d] is %d",channel, temp_value_int);break;
+
+    								case	0x120:	option_serdes_ce(channel, 0);
+    												sprintf(feedback, "DO- iserdes in channel [%d] has been actived",channel);break;
+    								case	0x121:	option_serdes_ce(channel, 1);
+    												sprintf(feedback, "DO- iserdes in channel [%d] has been deactived",channel);break;
+    								case	0x122:	//ReadSpecifiedData(channel, 5);
+    												ReadSpecifiedData(channel, 5) ? sprintf(feedback, "GET- iserdes in channel [%d] is actived", channel):sprintf(feedback, "GET- iserdes in channel [%d] is NOT actived", channel);break;
+
+    								case	0x130:	option_serdes_rst();
+    												sprintf(feedback, "DO- all iserdes has been resetted");break;
+    								case	0x140:	option_all_regs_rst();
+    												sprintf(feedback, "DO- all internal regs has been resetted");break;
+
+    								default	:		xil_printf("order non valide 50 \r\n");
+    												sprintf(feedback, "Deserialization operation order non valide!");break;
+    								}
+    								break;
+
+    		case		60:	switch(New_Operation){//D
+    								case	0x010:	led_show_adc0();
+    												sprintf(feedback, "DO- LED present CH0 (ADC0)!");break;
+    								case	0x011:	led_show_adc1();
+    												sprintf(feedback, "DO- LED present CH8 (ADC1)!");break;
+    								case	0x012:	//ReadSpecifiedData(0,13);
+    												ReadSpecifiedData(0,13)? sprintf(feedback, "GET- LED present CH8 (ADC1)!"):sprintf(feedback, "GET- LED present CH0 (ADC0)!"); break;
+    								case	0x013:	led_show_choise_flip();
+    												sprintf(feedback, "DO- LED present channel has changed!");break;
+
+    								case	0x020:	clr_bit_order(channel);
+    												sprintf(feedback, "DO- bit order in channel [%d] has been changed into original order!", channel);break;
+    								case	0x021:	set_bit_order(channel);
+    												sprintf(feedback, "DO- bit order in channel [%d] has been switched!", channel);break;
+    								case	0x022:	//ReadSpecifiedData(channel, 6);
+    												ReadSpecifiedData(channel, 6)? sprintf(feedback, "GET- bit order in channel [%d] has been switched!", channel) :sprintf(feedback, "GET- bit order in channel [%d] has been changed into original order!", channel);break;
+    								case	0x023:	option_bit_order_flip(channel);
+    												sprintf(feedback, "DO- bit order in channel [%d] has been toggled!", channel);break;
+
+
+    								case	0x030:	temp_value_32 = ReadSpecifiedData(channel, 12);
+    												sprintf(feedback, "GET- current result in channel [%d] is [%03lx] (12bits)", channel,temp_value_32); break;// read result (data)
+
+
+    								case	0x040:	option_active_calcu(channel);
+    												sprintf(feedback, "DO- enable result process function in channel [%d]", channel);break;
+    								case	0x041:	option_deactive_calcu(channel);
+    								    			sprintf(feedback, "DO- disable result process funtion in channel [%d]", channel);break;
+    								case	0x042:	//ReadSpecifiedData(channel, 11) ? 1: 0;
+    												ReadSpecifiedData(channel, 11) ? sprintf(feedback, "GET- result process is enabled in channel [%d]", channel) :  sprintf(feedback, "GET- result process disabled in channel [%d]", channel);break;
+
+    								case	0x050:	option_trans_result_to_dma();
+    												sprintf(feedback, "DO- transmission via dma for one time"); break;
+    								case	0x051:	SetValue_add_times(New_Order_Data&0xFFFF);
+    												sprintf(feedback, "DO- set [%ld] times of adding operation while processing", New_Order_Data); break;
+
+    								case	0x060:	affiche_dma();
+													sprintf(feedback, "GET- processed result");
+													break;
+    								default:		xil_printf("order non valide 60 \r\n");
+    												sprintf(feedback, "data processing operation order non valide!");break;
+    								}
+    								break;
+
+
+    		case		70:	switch(New_Operation){//A
+    								case	0x010:	auto_test_trans(New_Order_Data); //自动加载数据并测试正确性，生成报告
+    												sprintf(feedback, "auto test for all channels\r\n");break;
+
+    								case	0x020:	change_adc_test_value(New_Order_Data, channel);
+    												sprintf(feedback, "test value has been changed into [%03lx] in ADC%d", New_Order_Data, channel);break;
+    												break;
+
+    								case	0x030:	if(channel == 0){	//修改测试模式
+    													desactive_Adc1();
+    													active_Adc0();
+    												}else if(channel == 1){
+    													desactive_Adc0();
+    													active_Adc1();
+    												}
+    												Write_reg(0x000D, New_Order_Data);
+    												desactive_Adc1();
+    												desactive_Adc0();
+    												sprintf(feedback, "test mode has been changed into mode [%01lx] in ADC%d", New_Order_Data, channel);
+    												break;
+
+    								case	0x040:	auto_init_serdes();
+    												final_check();
+    												sprintf(feedback, "auto configure serdes for all channels\r\n");
+    												break;
+
+    								case	0x050: auto_run_on = 1; sprintf(feedback, "Start auto sampling and send to computer.\r\n");break;
+    								case	0x051: auto_run_on = 0; sprintf(feedback, "Stop auto sampling and send to computer.\r\n");break;
+
+    								case	0x060:	auto_transmission_on = 1;sprintf(feedback, "Start auto send to computer in high speed.\r\n");break;
+    								case	0x061:	auto_transmission_on = 0;sprintf(feedback, "Stop auto send to computer.\r\n");break;
+
+    								case	0x070:	auto_Sampling_on = 1;sprintf(feedback, "Start auto sampling in high speed.\r\n");break;
+    								case	0x071:	auto_Sampling_on = 0;sprintf(feedback, "Stop auto sampling.\r\n");break;
+
+
+    								default		:	sprintf(feedback, "Advanced operation order non valide!");
+    												xil_printf("order non valide 70 \r\n");
+    								}
+    								break;
+
+        	default		: xil_printf("order non valide\r\n");
+        	}
+}
