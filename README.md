@@ -1,4 +1,4 @@
-# A_A
+# Repository of the whole project in NovelMedical Campany
 
 Internship project files:
 
